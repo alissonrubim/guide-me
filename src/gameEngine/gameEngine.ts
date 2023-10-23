@@ -33,17 +33,23 @@ export default class GameEngine {
   }
 
   public addLayer({ 
-    id , 
-    onDraw 
+    id, 
+    onDraw,
+    onLoop,
+    onSetup, 
   }: { 
     id: string, 
-    onDraw: (context: CanvasRenderingContext2D) => void; 
+    onDraw?: (context: CanvasRenderingContext2D) => void; 
+    onLoop?: () => void;
+    onSetup?: (layer: Layer) => void;
   }){
     this._layers.push(new Layer({
       id: id,
       resolution: this.resolution,
+      containerRef: this._containerRef,
       onDraw,
-      containerRef: this._containerRef
+      onLoop,
+      onSetup,
     }))
   }
 
@@ -57,11 +63,12 @@ export default class GameEngine {
 
   private _setup() {
     this.onSetup?.();
+    this._layers.forEach((l) => l.setup());
     this._startMainLoop();
   }
 
   private _loop(){
-
+    this._layers.forEach((l) => l.loop());
   }
 
   private _draw(){

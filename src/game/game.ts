@@ -1,17 +1,24 @@
 import GameEngine from "@/gameEngine/gameEngine";
+import GameObject from "@/gameEngine/gameObject";
 import { RefObject } from "react";
+import PlayerGameObject from "./gameObjects/playerGameObject";
+import { TILE_SIZE } from "./const";
+import { Input } from "./input";
 
 export class Game {
   private _engine: GameEngine;
-
-  private _tileSize = 32
+  private _gameObjects: {
+    player?: PlayerGameObject
+  } = {
+    player: undefined
+  }
 
   constructor({ containerRef }:{ containerRef: RefObject<HTMLDivElement>}){
     this._engine = new GameEngine({
       containerRef,
       resolution: {
-        height: this._tileSize * 20,
-        width: this._tileSize * 20,
+        height: TILE_SIZE * 20,
+        width: TILE_SIZE * 20,
       }
     });
   }
@@ -22,7 +29,24 @@ export class Game {
     this._engine.start();
   }
 
+  public input(input: Input){
+    if(input === Input.UP){
+      this._gameObjects.player?.moveUp();
+    }
+    if(input === Input.DOWN){
+      this._gameObjects.player?.moveDown();
+    }
+    if(input === Input.LEFT){
+      this._gameObjects.player?.moveLeft();
+    }
+    if(input === Input.RIGHT){
+      this._gameObjects.player?.moveRight();
+    }
+  }
+
   private _setup(){
+    this._gameObjects.player = new PlayerGameObject();
+
     this._engine.addLayer({
       id: "background-0",
       onDraw: (ctx) => {
@@ -49,10 +73,9 @@ export class Game {
 
     this._engine.addLayer({
       id: "player-0",
-      onDraw: (ctx) => {
-        // ctx.fillStyle = "red";
-        // ctx.fillRect(0, 0, this._engine.resolution.width/2, this._engine.resolution.height);
-      }
+      onSetup: (layer) => {
+        layer.addGameObject(this._gameObjects.player!);
+      },      
     });
   }
 }
