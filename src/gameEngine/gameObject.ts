@@ -1,4 +1,4 @@
-import Painter from "./painters/paiter";
+import GameObjectRender from "./gameObjectRender";
 import Position from "./types/position";
 import Size from "./types/size";
 
@@ -6,24 +6,23 @@ export default class GameObject {
   public readonly size: Size;
   public readonly position: Position;
   public readonly id: string;
-
-  private _painter: Painter;
+  private _render: GameObjectRender;
 
   constructor({ 
     id,
     size,
     position,
-    painter
+    render,
   }:{
     id: string,
     size: Size,
-    position?: Position
-    painter: Painter
+    position?: Position,
+    render: GameObjectRender,
   }) {
     this.id = id;
     this.size = size;
     this.position = position ?? { x: 0, y: 0 }
-    this._painter = painter;
+    this._render = render;
   }
 
   public setup(){
@@ -35,6 +34,6 @@ export default class GameObject {
   }
 
   public draw(context: CanvasRenderingContext2D){
-    this._painter.draw(this, context);
+    this._render.draw(this, context);
   }
 }

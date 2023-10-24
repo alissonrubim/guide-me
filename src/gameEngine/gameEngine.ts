@@ -3,12 +3,13 @@ import Size from "./types/size";
 import Layer from "./layer";
 
 export default class GameEngine {
-  public onSetup?: () => void;
-
-  private _containerRef: RefObject<HTMLDivElement>;
-  private _layers: Layer[] = [];
   public readonly resolution: Size;
 
+  private _fps: number = 0;
+  private _loopTimeStamp: Date | undefined = undefined;
+  private _containerRef: RefObject<HTMLDivElement>;
+  private _layers: Layer[] = [];
+  
   constructor({ 
     containerRef,
     resolution
@@ -30,6 +31,10 @@ export default class GameEngine {
 
   public stop(){
 
+  }
+
+  public getFps(){
+    return this._fps;
   }
 
   public addLayer({ 
@@ -54,16 +59,21 @@ export default class GameEngine {
   }
 
   private _startMainLoop(){
+    this._loop();
+    this._draw();
+
+    // Calculate the fps
+    this._fps = ~~(1000/(new Date().getTime() - this._loopTimeStamp!.getTime()));
+    this._loopTimeStamp = new Date();
+
     setTimeout(() => {
-      this._loop();
-      this._draw();
       this._startMainLoop();
     }, 1)
   }
 
   private _setup() {
-    this.onSetup?.();
     this._layers.forEach((l) => l.setup());
+    this._loopTimeStamp = new Date();
     this._startMainLoop();
   }
 
