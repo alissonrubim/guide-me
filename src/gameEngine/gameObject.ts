@@ -30,7 +30,7 @@ export default class GameObject {
   }
 
   public loop(){
-
+    
   }
 
   public draw(context: CanvasRenderingContext2D){

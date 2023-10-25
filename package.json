@@ -8,12 +8,17 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.14",
+    "ace-builds": "^1.31.0",
     "next": "13.5.6",
     "react": "^18",
+    "react-ace": "^10.1.0",
     "react-dom": "^18"
   },
   "devDependencies": {

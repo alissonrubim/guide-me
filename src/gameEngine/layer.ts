@@ -47,6 +47,10 @@ export default class Layer {
     this._drawContext = this._canvasEl.getContext("2d")!;
   }
 
+  public destroy(){
+    this._canvasEl.remove();
+  }
+
   public setup(){
     this.onSetup?.(this);
   }

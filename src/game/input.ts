@@ -1,6 +1,9 @@
 export enum Input {
-  UP = "UP",
-  DOWN = "DOWN",
-  LEFT = "LEFT",
-  RIGHT = "RIGHT"
+  TURN_UP = "TURN_UP",
+  TURN_DOWN = "TURN_DOWN",
+  TURN_LEFT = "TURN_LEFT",
+  TURN_RIGHT = "TURN_RIGHT",
+  WALK = "WALK",
+  USE_SENSOR = "USE_SENSOR",
+  USE_SUPER_SENSOR = "USE_SUPER_SENSOR",
 }

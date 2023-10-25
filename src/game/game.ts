@@ -20,6 +20,7 @@ export class Game {
     player: undefined,
     walls: []
   }
+  private _map: Array<Array<GameObject | undefined>> = [];
 
   constructor({ containerRef }:{ containerRef: RefObject<HTMLDivElement>}){
     this._engine = new GameEngine({
@@ -37,19 +38,30 @@ export class Game {
     console.info("Game started!")
   }
 
+  public stop(){
+    console.info("Stopping game...")
+    this._destroy();
+    console.info("Game stopped!")
+  }
+
   public input(input: Input){
-    if(input === Input.UP){
+    console.info(input)
+    if(input === Input.TURN_UP){
       this._gameObjectsLib.player?.moveUp();
     }
-    if(input === Input.DOWN){
+    if(input === Input.TURN_DOWN){
       this._gameObjectsLib.player?.moveDown();
     }
-    if(input === Input.LEFT){
+    if(input === Input.TURN_LEFT){
       this._gameObjectsLib.player?.moveLeft();
     }
-    if(input === Input.RIGHT){
+    if(input === Input.TURN_RIGHT){
       this._gameObjectsLib.player?.moveRight();
     }
+  }
+
+  private _destroy(){
+    this._engine.destroy();
   }
 
   private _setup(){
