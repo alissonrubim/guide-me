@@ -8,15 +8,18 @@ import { TILE_COL_COUNT, TILE_SIZE } from "@/game/const";
 
 export default function CodeEditor({ 
   value, 
-  onChange
+  onChange,
+  disabled,
 }: { 
   value: string, 
-  onChange: (value: string) => void
+  onChange: (value: string) => void,
+  disabled: boolean
 }) {
   const onLoad = () => {};
 
   return (
     <AceEditor
+      readOnly={disabled}
       style={{
         height: `${(TILE_SIZE * TILE_COL_COUNT) + 8}px`,
         width: "auto",

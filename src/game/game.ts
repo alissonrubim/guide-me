@@ -11,6 +11,7 @@ import MapGenerator, { EMapTileType } from "./maps/mapGenerator";
 import KeyGameObject from "./gameObjects/keyGameObject";
 
 export class Game {
+  private _seed: number;
   private _engine: GameEngine;
   private _gameObjectsLib: {
     player?: PlayerGameObject,
@@ -22,7 +23,8 @@ export class Game {
   }
   private _map: Array<Array<GameObject | undefined>> = [];
 
-  constructor({ containerRef }:{ containerRef: RefObject<HTMLDivElement>}){
+  constructor({ containerRef, seed }:{ containerRef: RefObject<HTMLDivElement>, seed: number}){
+    this._seed = seed;
     this._engine = new GameEngine({
       containerRef,
       resolution: {
@@ -45,7 +47,6 @@ export class Game {
   }
 
   public input(input: Input){
-    console.info(input)
     if(input === Input.TURN_UP){
       this._gameObjectsLib.player?.moveUp();
     }
@@ -65,7 +66,7 @@ export class Game {
   }
 
   private _setup(){
-    this._map = new MapGenerator().generate({
+    this._map = new MapGenerator(this._seed).generate({
       width: TILE_ROW_COUNT,
       height: TILE_COL_COUNT,
       numOfHoles: 0,

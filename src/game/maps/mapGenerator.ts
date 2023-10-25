@@ -1,6 +1,7 @@
 import GameObject from "@/gameEngine/gameObject"
 import WallGameObject from "../gameObjects/wallGameObject";
 import PlayerGameObject from "../gameObjects/playerGameObject";
+import { Random } from "../helpers/random";
 
 export enum EMapTileType {
   NONE,
@@ -13,8 +14,10 @@ export enum EMapTileType {
 
 export default class MapGenerator{
 
-  constructor(){
+  private _random: Random;
 
+  constructor(seed: number){
+    this._random = new Random(seed);
   }
 
   public generate({
@@ -30,7 +33,7 @@ export default class MapGenerator{
   }) {
     const map: EMapTileType[][] = [];
   
-    // Preencher o mapa com espaços vazios (0)
+    // Preencher o mapa com espaços vazios
     for (let i = 0; i < height; i++) {
       map[i] = [];
       for (let j = 0; j < width; j++) {
@@ -38,17 +41,17 @@ export default class MapGenerator{
       }
     }
   
-    // Definir a posição do jogador (2)
-    const playerX: number = Math.floor(Math.random() * (width - 2)) + 1;
-    const playerY: number = Math.floor(Math.random() * (height - 2)) + 1;
+    // Definir a posição do jogador 
+    const playerX: number = Math.floor(this._random.get() * (width - 2)) + 1;
+    const playerY: number = Math.floor(this._random.get() * (height - 2)) + 1;
     map[playerY][playerX] = EMapTileType.PLAYER;
   
     // Encontrar uma posição para o objetivo (3) que esteja a pelo menos 15 blocos de distância do jogador
     let goalX: number, goalY: number;
   
     do {
-      goalX = Math.floor(Math.random() * (width - 2)) + 1;
-      goalY = Math.floor(Math.random() * (height - 2)) + 1;
+      goalX = Math.floor(this._random.get() * (width - 2)) + 1;
+      goalY = Math.floor(this._random.get() * (height - 2)) + 1;
     } while (
       playerX === goalX &&
       playerY === goalY &&
@@ -63,8 +66,8 @@ export default class MapGenerator{
     for (let i = 0; i < numWalls; i++) {
       let wallX: number, wallY: number;
       do {
-        wallX = Math.floor(Math.random() * (width - 2)) + 1;
-        wallY = Math.floor(Math.random() * (height - 2)) + 1;
+        wallX = Math.floor(this._random.get() * (width - 2)) + 1;
+        wallY = Math.floor(this._random.get() * (height - 2)) + 1;
       } while (
         wallX === playerX && wallY === playerY ||
         wallX === goalX && wallY === goalY
@@ -113,8 +116,8 @@ export default class MapGenerator{
     // for (let i = 0; i < numTraps; i++) {
     //   let trapX: number, trapY: number;
     //   do {
-    //     trapX = Math.floor(Math.random() * (width - 2)) + 1;
-    //     trapY = Math.floor(Math.random() * (height - 2)) + 1;
+    //     trapX = Math.floor(this._random.get() * (width - 2)) + 1;
+    //     trapY = Math.floor(this._random.get() * (height - 2)) + 1;
     //   } while (
     //     (trapX === playerX && trapY === playerY) ||
     //     (trapX === goalX && trapY === goalY) ||
@@ -128,8 +131,8 @@ export default class MapGenerator{
     // for (let i = 0; i < numHoles; i++) {
     //   let holeX: number, holeY: number;
     //   do {
-    //     holeX = Math.floor(Math.random() * (width - 2)) + 1;
-    //     holeY = Math.floor(Math.random() * (height - 2)) + 1;
+    //     holeX = Math.floor(this._random.get() * (width - 2)) + 1;
+    //     holeY = Math.floor(this._random.get() * (height - 2)) + 1;
     //   } while (
     //     (holeX === playerX && holeY === playerY) ||
     //     (holeX === goalX && holeY === goalY) ||

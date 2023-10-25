@@ -12,39 +12,64 @@ const defaultCode = `
 return actions.turnUp();
 `
 
-let game: Game | undefined;
+let GLOBAL_GAME: Game | undefined;
+let GLOBAL_FORCE_STOP_CODE: boolean = false;
 
 export default function GamePanel() {
   const [code, setCode] = useState(defaultCode);
+  const [codeIsOn, setCodeIsOn] = useState(false);
   const [gameIsOn, setGameIsOn] = useState(false);
+  const [seed, setSeed] = useState<number | undefined>();
   const gameContainerRef = useRef<HTMLDivElement>(null);
 
-  const onToggleOnOff = () => {
-    if(!game){
-      game = new Game({
+  const onToggleGameOnOff = () => {
+    if(!GLOBAL_GAME){
+      const _seed = Math.floor(Math.random() * 1000000000);
+      setSeed(_seed)
+      GLOBAL_GAME = new Game({
         containerRef: gameContainerRef,
+        seed: _seed
       });
-      game?.start();
+      GLOBAL_GAME?.start();
       setGameIsOn(true);
     }else{
-      game?.stop();
-      game = undefined;
+      GLOBAL_FORCE_STOP_CODE = true;
+      GLOBAL_GAME?.stop();
+      GLOBAL_GAME = undefined;
       setGameIsOn(false);
     }
   }
   
   
   const onExecuteCode = () => {
-    game?.input(executeCode(code))
+    if(codeIsOn){
+      GLOBAL_FORCE_STOP_CODE = true;
+    }else{
+      let i = 0;
+      const loopCommand = () => {
+        if(!GLOBAL_FORCE_STOP_CODE && i < 5){
+          i++;
+          GLOBAL_GAME?.input(executeCode(code))
+          setTimeout(() => { loopCommand() }, 1000)
+        }else{
+          setCodeIsOn(false);
+          GLOBAL_FORCE_STOP_CODE = false;
+        }
+      };
+      
+      setCodeIsOn(true);
+      loopCommand();
+    }
+    
   }
   return (
     <Box>
       
-      <Button variant="contained" onClick={() => { game?.input(Input.TURN_UP) }}>Up</Button>
-      <Button variant="contained" onClick={() => { game?.input(Input.TURN_DOWN) }}>Down</Button>
-      <Button variant="contained" onClick={() => { game?.input(Input.TURN_LEFT)}}>Left</Button>
-      <Button variant="contained" onClick={() => { game?.input(Input.TURN_RIGHT) }}>Right</Button>
-      <Button variant="contained" onClick={() => { onExecuteCode() }}>Execute</Button>
+      <Button variant="contained" onClick={() => { GLOBAL_GAME?.input(Input.TURN_UP) }}>Up</Button>
+      <Button variant="contained" onClick={() => { GLOBAL_GAME?.input(Input.TURN_DOWN) }}>Down</Button>
+      <Button variant="contained" onClick={() => { GLOBAL_GAME?.input(Input.TURN_LEFT)}}>Left</Button>
+      <Button variant="contained" onClick={() => { GLOBAL_GAME?.input(Input.TURN_RIGHT) }}>Right</Button>
+      <div>Seed: {seed?.toString(16)}</div>
 
       <Box sx={{ 
         marginTop: '24px',
@@ -59,13 +84,14 @@ export default function GamePanel() {
             <GameRenderContainer ref={gameContainerRef}></GameRenderContainer>
           </Box>
           <Box sx={{ marginLeft: 2, width: "100%" }}>
-            <CodeEditor value={code} onChange={(v) => {setCode(v)}}/>
+            <CodeEditor disabled={codeIsOn} value={code} onChange={(v) => {setCode(v)}}/>
           </Box>
         </Box>
 
         <Box>
-            <Button variant="contained" onClick={() => { onToggleOnOff() }}>Turn { gameIsOn ? "off" : "on" }</Button>
-          </Box>
+          <Button variant="contained" onClick={() => { onToggleGameOnOff() }} disabled={codeIsOn} >Turn { gameIsOn ? "off" : "on" }</Button>
+          <Button variant="contained" onClick={() => { onExecuteCode() }} disabled={!gameIsOn}>{codeIsOn ? "Pause" : "Run" }</Button>
+        </Box>
       </Box>
     </Box>)
 }
